@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'views/maindView.dart';
 
 /// Punto de entrada de la aplicación.
-/// Inicializa Firebase antes de montar el árbol de widgets.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();

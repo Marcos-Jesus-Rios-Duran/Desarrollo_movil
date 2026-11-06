@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-/// Modelo puro de dominio que representa un equipo del catálogo.
-/// La vista no conoce nada de Firebase; solo trabaja con esta clase.
 class EquipmentModel {
   final String id;
   final String name;
@@ -33,9 +31,9 @@ class EquipmentModel {
   }
 
   // ---------------------------------------------------------------------------
-  // Igualdad estructural: Flutter usa == internamente para decidir si un widget
-  // necesita repintarse. Al implementar esto correctamente evitamos rebuilds
-  // innecesarios cuando el stream emite el mismo conjunto de datos.
+  // Igualdad estructural: Sobreescribimos los operadores == y hashCode para comparar instancias de EquipmentModel
+  // Esto es útil para pruebas unitarias y para usar en colecciones que dependen de la igualdad.
+  // Así mismo mejoramos el consumo de memoria y detectamos cambios en los objetos de manera más eficiente.
   // ---------------------------------------------------------------------------
 
   @override
