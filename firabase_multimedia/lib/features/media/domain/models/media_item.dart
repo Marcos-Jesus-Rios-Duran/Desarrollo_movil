@@ -20,29 +20,34 @@ class MediaItem extends Equatable {
   /// y se persiste como String en Firestore.
   final String imageUrl;
 
+  /// UID de Firebase Auth propietario del recurso.
+  final String ownerId;
+
   const MediaItem({
     required this.id,
     required this.name,
     required this.imageUrl,
+    required this.ownerId,
   });
 
   @override
-  List<Object?> get props => [id, name, imageUrl];
+  List<Object?> get props => [id, name, imageUrl, ownerId];
 
   /// Copia superficial con campos opcionales sobreescritos.
   MediaItem copyWith({
     String? id,
     String? name,
     String? imageUrl,
+    String? ownerId,
   }) {
     return MediaItem(
       id: id ?? this.id,
       name: name ?? this.name,
       imageUrl: imageUrl ?? this.imageUrl,
+      ownerId: ownerId ?? this.ownerId,
     );
   }
 
   @override
   String toString() => 'MediaItem(id: $id, name: $name)';
 }
-

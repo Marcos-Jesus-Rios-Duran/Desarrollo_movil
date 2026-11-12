@@ -24,22 +24,36 @@ class FirebaseMediaRepository implements IMediaRepository {
   FirebaseMediaRepository(this._storage, this._firestore, this._uuid);
 
   @override
-  Future<String> uploadImageBytes(Uint8List bytes, String userId) async {
-    // Genera un nombre único para prevenir sobreescrituras
+  Future<String> uploadImageBytes(
+    Uint8List bytes,
+    String userId, {
+    void Function(double progress)? onProgress,
+  }) async {
     final fileName = '${_uuid.v4()}.jpg';
-
-    // Ruta segura: users/{userId}/photos/{uuid.jpg}
     final ref = _storage.ref().child('users/$userId/photos/$fileName');
 
-    // Sube los bytes comprimidos con metadata de tipo JPEG
-    final uploadTask = await ref.putData(
+    final uploadTask = ref.putData(
       bytes,
       SettableMetadata(contentType: 'image/jpeg'),
     );
 
-    // Obtiene y retorna la Download URL
-    final downloadUrl = await uploadTask.ref.getDownloadURL();
-    return downloadUrl;
+    final subscription = uploadTask.snapshotEvents.listen((snapshot) {
+      final total = snapshot.totalBytes;
+      if (total <= 0) return;
+      onProgress?.call(snapshot.bytesTransferred / total);
+    });
+
+    try {
+      await uploadTask;
+      return ref.getDownloadURL();
+    } finally {
+      await subscription.cancel();
+    }
+  }
+
+  @override
+  Future<void> deleteUploadedImage(String downloadUrl) {
+    return _storage.refFromURL(downloadUrl).delete();
   }
 
   @override
@@ -51,12 +65,13 @@ class FirebaseMediaRepository implements IMediaRepository {
     await _firestore.collection('productos').doc(item.id).set(dto.toJson());
   }
 
-  Future<List<MediaItem>> getMediaItems() async {
+  @override
+  Future<List<MediaItem>> getMediaItems(String ownerId) async {
     try {
       // Ordenamos por 'updatedAt' ya que es el campo inyectado en MediaItemDto.toJson()
       final snapshot = await _firestore
           .collection('productos')
-          .orderBy('updatedAt', descending: true)
+          .where('ownerId', isEqualTo: ownerId)
           .get();
 
       // Deserializamos usando el DTO y convertimos al modelo de dominio puro
@@ -64,10 +79,8 @@ class FirebaseMediaRepository implements IMediaRepository {
         final data = doc.data();
         return MediaItemDto.fromJson(data).toDomain();
       }).toList();
-
     } catch (e) {
       throw Exception('Error al obtener la galería: $e');
     }
   }
 }
-

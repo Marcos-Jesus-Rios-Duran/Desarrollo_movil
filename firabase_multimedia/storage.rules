@@ -1,0 +1,20 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /users/{userId}/photos/{photoId} {
+      allow read: if request.auth != null
+          && request.auth.uid == userId;
+
+      // create/update exigen dueño, tamaño < 2 MB y MIME de imagen.
+      // delete va aparte: un delete no trae request.resource, y el
+      // rollback (Firestore falló) necesita poder borrar el binario.
+      allow create, update: if request.auth != null
+                            && request.auth.uid == userId
+                            && request.resource.size < 2 * 1024 * 1024
+                            && request.resource.contentType.matches('image/.*');
+
+      allow delete: if request.auth != null
+                    && request.auth.uid == userId;
+    }
+  }
+}

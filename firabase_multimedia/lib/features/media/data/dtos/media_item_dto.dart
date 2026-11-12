@@ -11,11 +11,13 @@ class MediaItemDto {
   final String id;
   final String name;
   final String imageUrl;
+  final String ownerId;
 
   const MediaItemDto({
     required this.id,
     required this.name,
     required this.imageUrl,
+    required this.ownerId,
   });
 
   /// Construye un DTO desde un modelo de dominio.
@@ -24,6 +26,7 @@ class MediaItemDto {
       id: item.id,
       name: item.name,
       imageUrl: item.imageUrl,
+      ownerId: item.ownerId,
     );
   }
 
@@ -36,6 +39,7 @@ class MediaItemDto {
       'id': id,
       'name': name,
       'imageUrl': imageUrl,
+      'ownerId': ownerId,
       'updatedAt': FieldValue.serverTimestamp(),
     };
   }
@@ -46,6 +50,7 @@ class MediaItemDto {
       id: json['id'] as String,
       name: json['name'] as String,
       imageUrl: json['imageUrl'] as String,
+      ownerId: json['ownerId'] as String,
     );
   }
 
@@ -55,7 +60,7 @@ class MediaItemDto {
       id: id,
       name: name,
       imageUrl: imageUrl,
+      ownerId: ownerId,
     );
   }
 }
-

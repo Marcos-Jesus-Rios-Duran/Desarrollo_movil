@@ -22,7 +22,7 @@ class AuthStore extends ChangeNotifier {
 
   bool get isAuthenticated => _userId != null;
 
-  /// Ejecuta el flujo de login anónimo.
+  /// Ejecuta el flujo de login con Google.
   ///
   /// Actualiza [isLoading] durante la operación y notifica
   /// a los listeners en cada cambio de estado.
@@ -48,10 +48,16 @@ class AuthStore extends ChangeNotifier {
     return isAuthenticated;
   }
 
+  Future<void> signOut() async {
+    await _authRepository.signOut();
+    _userId = null;
+    _errorMessage = null;
+    notifyListeners();
+  }
+
   /// Intenta restaurar la sesión existente sin re-autenticar.
   void tryRestoreSession() {
     _userId = _authRepository.getCurrentUserId();
     notifyListeners();
   }
 }
-

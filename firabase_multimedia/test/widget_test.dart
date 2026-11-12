@@ -7,24 +7,32 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:provider/provider.dart';
 
-import 'package:firabase_multimedia/main.dart';
+import 'package:firabase_multimedia/features/auth/domain/repositories/i_auth_repository.dart';
+import 'package:firabase_multimedia/features/auth/presentation/screens/login_screen.dart';
+import 'package:firabase_multimedia/features/auth/presentation/stores/auth_store.dart';
+
+class _FakeAuthRepository implements IAuthRepository {
+  @override
+  Future<String?> signIn() async => 'test-user';
+
+  @override
+  Future<void> signOut() async {}
+
+  @override
+  String? getCurrentUserId() => null;
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('muestra el acceso con Google', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ChangeNotifierProvider<AuthStore>(
+        create: (_) => AuthStore(_FakeAuthRepository()),
+        child: const MaterialApp(home: LoginScreen()),
+      ),
+    );
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Continuar con Google'), findsOneWidget);
   });
 }

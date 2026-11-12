@@ -34,6 +34,7 @@ dependencies:
   uuid: ^4.5.1
   # Para sobrescribir operadores de igualdad en los modelos
   equatable: ^2.0.5
+  google_sign_in: ^7.2.0
 
 dev_dependencies:
   flutter_test:

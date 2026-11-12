@@ -4,7 +4,7 @@ import 'package:firabase_multimedia/features/auth/presentation/stores/auth_store
 
 /// Pantalla de login con diseño elegante y moderno.
 ///
-/// Utiliza autenticación anónima para onboarding rápido.
+/// Utiliza autenticación con Google para crear una sesión segura.
 /// Al autenticarse exitosamente, navega a [MediaScreen].
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -214,16 +214,19 @@ class LoginScreen extends StatelessWidget {
                         : const Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.login_rounded, size: 20),
+                              Icon(Icons.account_circle_rounded, size: 20),
                               SizedBox(width: 10),
-                              Text(
-                                'Ingresar como Invitado',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                  letterSpacing: 0.5,
+                              Flexible(
+                                child: Text(
+                                  'Continuar con Google',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.5,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ),
+                              )
                             ],
                           ),
                   ),
@@ -244,4 +247,3 @@ class LoginScreen extends StatelessWidget {
     }
   }
 }
-

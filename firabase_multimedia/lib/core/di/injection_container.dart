@@ -10,6 +10,7 @@ import 'package:firabase_multimedia/features/auth/domain/repositories/i_auth_rep
 import 'package:firabase_multimedia/features/auth/presentation/stores/auth_store.dart';
 import 'package:firabase_multimedia/features/media/data/repositories/firebase_media_repository.dart';
 import 'package:firabase_multimedia/features/media/domain/repositories/i_media_repository.dart';
+import 'package:firabase_multimedia/features/media/domain/usecases/get_media.dart';
 import 'package:firabase_multimedia/features/media/presentation/stores/media_store.dart';
 
 /// Service Locator global (Singleton).
@@ -57,7 +58,7 @@ void configureDependencies() {
       sl<IMediaRepository>(),
       sl<ImagePicker>(),
       sl<Uuid>(),
+      GetMediaUseCase(sl<IMediaRepository>()),
     ),
   );
 }
-

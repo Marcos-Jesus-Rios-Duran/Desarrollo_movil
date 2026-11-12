@@ -3,15 +3,17 @@
 /// Siguiendo el principio de Inversión de Dependencias (SOLID-D),
 /// la capa de dominio define la interfaz; la capa de datos la implementa.
 abstract class IAuthRepository {
-  /// Inicia sesión de forma anónima.
+  /// Inicia sesión con Google.
   ///
   /// Retorna el `userId` (UID) si el login fue exitoso,
   /// o `null` si falló.
   Future<String?> signIn();
+
+  /// Cierra la sesión actual en Firebase y Google.
+  Future<void> signOut();
 
   /// Obtiene el UID del usuario actualmente autenticado.
   ///
   /// Retorna `null` si no hay sesión activa.
   String? getCurrentUserId();
 }
-

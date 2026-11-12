@@ -6,7 +6,7 @@ class GetMediaUseCase {
 
   GetMediaUseCase(this._repository);
 
-  Future<List<MediaItem>> call() async {
-    return await _repository.getMediaItems();
+  Future<List<MediaItem>> call(String ownerId) async {
+    return await _repository.getMediaItems(ownerId);
   }
 }
