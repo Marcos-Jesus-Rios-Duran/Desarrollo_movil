@@ -2,8 +2,10 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import '../../domain/repositories/i_location_repository.dart';
 
+/// Implementación de acceso a ubicación, permisos y geocodificación.
 class LocationRepositoryImpl implements ILocationRepository {
   @override
+  /// Verifica el servicio de ubicación y solicita permiso cuando es necesario.
   Future<Position> getCurrentLocation() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -22,13 +24,14 @@ class LocationRepositoryImpl implements ILocationRepository {
       throw Exception('Los permisos están denegados permanentemente');
     }
 
-    // Usando alta precisión como requiere la especificación técnica
+    // Se solicita alta precisión para obtener una posición adecuada para el mapa.
     return await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
     );
   }
 
   @override
+  /// Devuelve la calle y colonia/localidad asociadas a las coordenadas.
   Future<String> getAddressFromCoordinates(double lat, double lng) async {
     try {
       List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
@@ -45,8 +48,8 @@ class LocationRepositoryImpl implements ILocationRepository {
   }
 
   @override
+  /// Calcula la distancia en línea recta sobre la superficie terrestre.
   double calculateDistance(double startLat, double startLng, double endLat, double endLng) {
-    // Retorna la distancia geodésica en metros exactos[cite: 14]
     return Geolocator.distanceBetween(startLat, startLng, endLat, endLng);
   }
 }

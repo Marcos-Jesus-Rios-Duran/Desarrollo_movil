@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../controllers/map_view_controller.dart';
 
+/// Pantalla principal del mapa y panel de información geoespacial.
 class MapPage extends StatefulWidget {
   final MapViewController controller;
 
@@ -11,6 +12,7 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
+/// Administra la suscripción al estado del controlador durante la vida de la pantalla.
 class _MapPageState extends State<MapPage> {
   @override
   void initState() {
@@ -48,14 +50,14 @@ class _MapPageState extends State<MapPage> {
               children: [
                 GoogleMap(
                   initialCameraPosition: const CameraPosition(
-                    target: LatLng(20.2756, -97.9611), // UTXJ por defecto[cite: 13]
+                    target: LatLng(20.2756, -97.9611), // Posición inicial de respaldo.
                     zoom: 15.5,
                   ),
                   myLocationEnabled: true,
                   myLocationButtonEnabled: true,
                   markers: widget.controller.markers,
                   onMapCreated: widget.controller.onMapCreated,
-                  onTap: widget.controller.onMapTapped, // Marcador dinámico al tocar[cite: 13, 16]
+                  onTap: widget.controller.onMapTapped,
                 ),
                 Positioned(
                   bottom: 24,

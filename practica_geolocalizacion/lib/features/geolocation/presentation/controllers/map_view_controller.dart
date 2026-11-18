@@ -3,19 +3,28 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../domain/repositories/i_location_repository.dart';
 
+/// Coordina el estado de la pantalla de mapa y sus interacciones.
 class MapViewController extends ChangeNotifier {
   final ILocationRepository _locationRepository;
 
   MapViewController(this._locationRepository);
 
+  /// Controlador nativo del mapa, asignado cuando Google Maps termina de crearse.
   GoogleMapController? mapController;
+  /// Última posición conocida del usuario.
   Position? currentPosition;
+  /// Punto seleccionado por el usuario al tocar el mapa.
   LatLng? selectedDestination;
+  /// Dirección postal del punto seleccionado.
   String destinationAddress = '';
+  /// Distancia entre la posición actual y el destino, expresada en metros.
   double distanceInMeters = 0.0;
+  /// Marcadores visibles para la posición actual y el destino.
   Set<Marker> markers = {};
+  /// Indica si la carga inicial de ubicación continúa en progreso.
   bool isLoading = true;
 
+  /// Obtiene la posición inicial y prepara el primer marcador.
   Future<void> initializeMap() async {
     try {
       isLoading = true;
@@ -33,6 +42,7 @@ class MapViewController extends ChangeNotifier {
     }
   }
 
+  /// Registra el mapa y centra la cámara en la posición del usuario.
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
     if (currentPosition != null) {
@@ -47,11 +57,11 @@ class MapViewController extends ChangeNotifier {
     }
   }
 
+  /// Selecciona un destino, calcula su distancia y obtiene su dirección.
   Future<void> onMapTapped(LatLng point) async {
     selectedDestination = point;
 
     if (currentPosition != null) {
-      // Requerimiento: Cálculo de distancia en vivo[cite: 14, 16]
       distanceInMeters = _locationRepository.calculateDistance(
         currentPosition!.latitude,
         currentPosition!.longitude,
@@ -60,7 +70,6 @@ class MapViewController extends ChangeNotifier {
       );
     }
 
-    // Requerimiento: Geocodificación inversa[cite: 14, 16]
     destinationAddress = await _locationRepository.getAddressFromCoordinates(
       point.latitude,
       point.longitude,
@@ -70,6 +79,7 @@ class MapViewController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Reconstruye los marcadores que representan usuario y destino.
   void _updateMarkers() {
     markers.clear();
 
