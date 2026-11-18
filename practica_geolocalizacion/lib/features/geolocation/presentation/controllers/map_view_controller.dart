@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
-import '../../domain/repositories/i_location_repository.dart';
+import 'package:practica_geolocalizacion/features/geolocation/domain/repositories/i_location_repository.dart';
 
 /// Coordina el estado de la pantalla de mapa y sus interacciones.
 class MapViewController extends ChangeNotifier {

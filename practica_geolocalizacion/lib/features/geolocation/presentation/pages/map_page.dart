@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../controllers/map_view_controller.dart';
+import 'package:practica_geolocalizacion/features/geolocation/presentation/controllers/map_view_controller.dart';
 
 /// Pantalla principal del mapa y panel de información geoespacial.
 class MapPage extends StatefulWidget {
+  /// Controlador que proporciona el estado y las acciones del mapa.
   final MapViewController controller;
 
+  /// Construye la pantalla usando el controlador de geolocalización recibido.
   const MapPage({super.key, required this.controller});
 
   @override
@@ -15,6 +17,7 @@ class MapPage extends StatefulWidget {
 /// Administra la suscripción al estado del controlador durante la vida de la pantalla.
 class _MapPageState extends State<MapPage> {
   @override
+  /// Inicia la ubicación y registra la escucha de cambios del controlador.
   void initState() {
     super.initState();
     widget.controller.initializeMap().catchError((error) {
@@ -25,11 +28,13 @@ class _MapPageState extends State<MapPage> {
     widget.controller.addListener(_onControllerChanged);
   }
 
+  /// Solicita la reconstrucción de la vista cuando cambia el estado del mapa.
   void _onControllerChanged() {
     setState(() {});
   }
 
   @override
+  /// Libera la suscripción y el controlador nativo de Google Maps.
   void dispose() {
     widget.controller.removeListener(_onControllerChanged);
     widget.controller.mapController?.dispose();
@@ -37,6 +42,7 @@ class _MapPageState extends State<MapPage> {
   }
 
   @override
+  /// Construye el mapa, sus controles y el panel de información del destino.
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(

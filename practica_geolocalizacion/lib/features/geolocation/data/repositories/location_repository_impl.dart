@@ -1,6 +1,6 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
-import '../../domain/repositories/i_location_repository.dart';
+import 'package:practica_geolocalizacion/features/geolocation/domain/repositories/i_location_repository.dart';
 
 /// Implementación de acceso a ubicación, permisos y geocodificación.
 class LocationRepositoryImpl implements ILocationRepository {

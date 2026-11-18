@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'features/geolocation/data/repositories/location_repository_impl.dart';
-import 'features/geolocation/presentation/controllers/map_view_controller.dart';
-import 'features/geolocation/presentation/pages/map_page.dart';
+import 'package:practica_geolocalizacion/features/geolocation/data/repositories/location_repository_impl.dart';
+import 'package:practica_geolocalizacion/features/geolocation/presentation/controllers/map_view_controller.dart';
+import 'package:practica_geolocalizacion/features/geolocation/presentation/pages/map_page.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
