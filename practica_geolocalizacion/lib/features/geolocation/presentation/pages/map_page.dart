@@ -40,9 +40,17 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Localizador de Puntos de Interés'),
-        backgroundColor: Colors.indigo,
+        titleSpacing: 20,
+        title: const Row(
+          children: [
+            Icon(Icons.explore_outlined),
+            SizedBox(width: 10),
+            Text('Explora tu ubicación'),
+          ],
+        ),
+        backgroundColor: const Color(0xFF182B49),
         foregroundColor: Colors.white,
+        elevation: 0,
       ),
       body: widget.controller.isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -64,35 +72,76 @@ class _MapPageState extends State<MapPage> {
                   left: 16,
                   right: 16,
                   child: Card(
-                    elevation: 8,
+                    elevation: 10,
+                    color: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(16.0),
+                      padding: const EdgeInsets.fromLTRB(18, 16, 18, 18),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Panel de Información Geoespacial',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.indigo,
+                          const Row(
+                            children: [
+                              Icon(Icons.pin_drop_outlined, color: Color(0xFF1565C0)),
+                              SizedBox(width: 8),
+                              Text(
+                                'Punto seleccionado',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 16,
+                                  color: Color(0xFF182B49),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 14),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEAF2FF),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.straighten, color: Color(0xFF1565C0)),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    'Distancia al destino\n${widget.controller.distanceInMeters.toStringAsFixed(2)} m '
+                                    '(${(widget.controller.distanceInMeters / 1000).toStringAsFixed(2)} km)',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      height: 1.35,
+                                      fontWeight: FontWeight.w600,
+                                      color: Color(0xFF182B49),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          const Divider(),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Distancia al destino: ${widget.controller.distanceInMeters.toStringAsFixed(2)} m '
-                            '(${(widget.controller.distanceInMeters / 1000).toStringAsFixed(2)} km)',
-                            style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                          ),
-                          const SizedBox(height: 6),
-                          Text(
-                            'Dirección: ${widget.controller.destinationAddress.isEmpty ? "Toca cualquier punto del mapa para calcular" : widget.controller.destinationAddress}',
-                            style: const TextStyle(fontSize: 13, color: Colors.black87),
+                          const SizedBox(height: 10),
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.location_on_outlined, color: Color(0xFFE05252)),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  widget.controller.destinationAddress.isEmpty
+                                      ? 'Toca cualquier punto del mapa para consultar la dirección.'
+                                      : widget.controller.destinationAddress,
+                                  style: const TextStyle(
+                                    fontSize: 13,
+                                    height: 1.35,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
