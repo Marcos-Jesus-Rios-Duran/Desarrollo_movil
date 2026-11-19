@@ -31,6 +31,17 @@ class LocationRepositoryImpl implements ILocationRepository {
   }
 
   @override
+  /// Entrega actualizaciones continuas de ubicación con alta precisión.
+  Stream<Position> getLocationUpdates() {
+    return Geolocator.getPositionStream(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: 5,
+      ),
+    );
+  }
+
+  @override
   /// Devuelve la calle y colonia/localidad asociadas a las coordenadas.
   Future<String> getAddressFromCoordinates(double lat, double lng) async {
     try {

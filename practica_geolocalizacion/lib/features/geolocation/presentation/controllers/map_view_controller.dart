@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
@@ -24,7 +26,9 @@ class MapViewController extends ChangeNotifier {
   /// Indica si la carga inicial de ubicación continúa en progreso.
   bool isLoading = true;
 
-  /// Obtiene la posición inicial y prepara el primer marcador.
+  StreamSubscription<Position>? _locationSubscription;
+
+  /// Obtiene la posición inicial y prepara la actualización dinámica.
   Future<void> initializeMap() async {
     try {
       isLoading = true;
@@ -32,6 +36,14 @@ class MapViewController extends ChangeNotifier {
 
       currentPosition = await _locationRepository.getCurrentLocation();
       _updateMarkers();
+
+      await _locationSubscription?.cancel();
+      _locationSubscription = _locationRepository.getLocationUpdates().listen(
+        _updateCurrentPosition,
+        onError: (Object error) {
+          debugPrint('Error al actualizar ubicación: $error');
+        },
+      );
 
       isLoading = false;
       notifyListeners();
@@ -55,6 +67,23 @@ class MapViewController extends ChangeNotifier {
         ),
       );
     }
+  }
+
+  /// Actualiza la posición actual y recalcula la distancia al destino.
+  void _updateCurrentPosition(Position position) {
+    currentPosition = position;
+
+    if (selectedDestination != null) {
+      distanceInMeters = _locationRepository.calculateDistance(
+        position.latitude,
+        position.longitude,
+        selectedDestination!.latitude,
+        selectedDestination!.longitude,
+      );
+    }
+
+    _updateMarkers();
+    notifyListeners();
   }
 
   /// Selecciona un destino, calcula su distancia y obtiene su dirección.
@@ -83,17 +112,6 @@ class MapViewController extends ChangeNotifier {
   void _updateMarkers() {
     markers.clear();
 
-    if (currentPosition != null) {
-      markers.add(
-        Marker(
-          markerId: const MarkerId('current_location'),
-          position: LatLng(currentPosition!.latitude, currentPosition!.longitude),
-          infoWindow: const InfoWindow(title: 'Mi Ubicación Actual'),
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueAzure),
-        ),
-      );
-    }
-
     if (selectedDestination != null) {
       markers.add(
         Marker(
@@ -107,5 +125,11 @@ class MapViewController extends ChangeNotifier {
         ),
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription?.cancel();
+    super.dispose();
   }
 }

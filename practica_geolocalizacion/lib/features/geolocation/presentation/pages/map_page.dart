@@ -20,7 +20,11 @@ class _MapPageState extends State<MapPage> {
   /// Inicia la ubicación y registra la escucha de cambios del controlador.
   void initState() {
     super.initState();
-    widget.controller.initializeMap().catchError((error) {
+    widget.controller.initializeMap().catchError((Object error) {
+      if (!mounted) {
+        return;
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error al inicializar GPS: $error')),
       );
@@ -37,7 +41,7 @@ class _MapPageState extends State<MapPage> {
   /// Libera la suscripción y el controlador nativo de Google Maps.
   void dispose() {
     widget.controller.removeListener(_onControllerChanged);
-    widget.controller.mapController?.dispose();
+    widget.controller.dispose();
     super.dispose();
   }
 
