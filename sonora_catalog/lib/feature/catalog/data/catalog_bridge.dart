@@ -75,3 +75,4 @@ class CatalogBridge {
   /// Expone el DAO remoto para operaciones de sincronización de bajo nivel.
   CloudCatalogDao get remoteDao => _remote;
 }
+

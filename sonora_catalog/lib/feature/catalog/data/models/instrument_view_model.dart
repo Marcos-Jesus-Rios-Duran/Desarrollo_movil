@@ -193,3 +193,4 @@ class InstrumentViewModel {
       'price: $price, stock: $stock, version: $version, '
       'isSynced: $isSynced, isDeleted: $isDeleted)';
 }
+
