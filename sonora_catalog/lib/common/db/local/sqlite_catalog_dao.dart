@@ -16,7 +16,7 @@ class SqliteCatalogDao implements DataLogInterface {
   final DbHelper _dbHelper;
 
   SqliteCatalogDao({DbHelper? dbHelper})
-      : _dbHelper = dbHelper ?? DbHelper.instance;
+    : _dbHelper = dbHelper ?? DbHelper.instance;
 
   // ---------------------------------------------------------------------------
   // Implementación de DataLogInterface
@@ -144,5 +144,28 @@ class SqliteCatalogDao implements DataLogInterface {
   /// Convierte una fila SQLite en [InstrumentDto].
   InstrumentDto _rowToDto(Map<String, dynamic> row) {
     return InstrumentDto.fromMap(row);
+  }
+
+  /// Igual que [getById], pero devuelve el modelo de BD (uso exclusivo de SyncService).
+  Future<InstrumentDbModel?> getDbModelById(String id) async {
+    final Database db = await _dbHelper.database;
+    final List<Map<String, dynamic>> rows = await db.query(
+      DbCreate.tableInstruments,
+      where: 'id = ?',
+      whereArgs: <Object>[id],
+      limit: 1,
+    );
+    if (rows.isEmpty) return null;
+    return InstrumentDbModel.fromMap(rows.first);
+  }
+
+  /// Escribe un registro remoto SIN modificar version, updated_at ni is_synced.
+  Future<void> upsertFromRemote(InstrumentDbModel model) async {
+    final Database db = await _dbHelper.database;
+    await db.insert(
+      DbCreate.tableInstruments,
+      model.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 }

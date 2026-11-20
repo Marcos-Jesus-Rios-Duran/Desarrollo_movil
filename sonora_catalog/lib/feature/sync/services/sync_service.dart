@@ -36,10 +36,10 @@ class SyncService {
     CloudCatalogDao? remote,
     DbHelper? dbHelper,
     Uuid? uuid,
-  })  : _local = local ?? SqliteCatalogDao(),
-        _remote = remote ?? CloudCatalogDao(),
-        _dbHelper = dbHelper ?? DbHelper.instance,
-        _uuid = uuid ?? const Uuid();
+  }) : _local = local ?? SqliteCatalogDao(),
+       _remote = remote ?? CloudCatalogDao(),
+       _dbHelper = dbHelper ?? DbHelper.instance,
+       _uuid = uuid ?? const Uuid();
 
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
   // Punto de entrada principal
@@ -78,18 +78,20 @@ class SyncService {
 
     // Convertir a DTOs para el DAO remoto
     final List<InstrumentDto> dtos = pending
-        .map((m) => InstrumentDto(
-              id: m.id,
-              categoryId: m.categoryId,
-              name: m.name,
-              brand: m.brand,
-              price: m.price,
-              stock: m.stock,
-              version: m.version,
-              updatedAt: m.updatedAt,
-              isSynced: m.isSynced,
-              isDeleted: m.isDeleted,
-            ))
+        .map(
+          (m) => InstrumentDto(
+            id: m.id,
+            categoryId: m.categoryId,
+            name: m.name,
+            brand: m.brand,
+            price: m.price,
+            stock: m.stock,
+            version: m.version,
+            updatedAt: m.updatedAt,
+            isSynced: m.isSynced,
+            isDeleted: m.isDeleted,
+          ),
+        )
         .toList();
 
     // Push masivo vía batch
@@ -121,15 +123,16 @@ class SyncService {
   /// - En caso contrario → mantener local (ya fue enviado con version superior).
   Future<void> _pullAndMerge() async {
     final String since = await _getLastPullAt();
-    final List<InstrumentDto> remoteChanges =
-        await _remote.getChangedSince(since);
+    final List<InstrumentDto> remoteChanges = await _remote.getChangedSince(
+      since,
+    );
 
     for (final InstrumentDto remote in remoteChanges) {
-      final InstrumentDbModel? local = await _local.getById(remote.id);
+      final InstrumentDbModel? local = await _local.getDbModelById(remote.id);
 
       if (local == null) {
         // Caso: nuevo registro remoto — insertar en local
-        await _local.upsert(_dtoToDbModel(remote, isSynced: 1));
+        await _local.upsertFromRemote(_dtoToDbModel(remote, isSynced: 1));
         await _writeSyncLog(
           entityId: remote.id,
           entityType: 'instrument',
@@ -139,12 +142,13 @@ class SyncService {
         continue;
       }
 
-      final bool remoteWins = remote.version > local.version ||
+      final bool remoteWins =
+          remote.version > local.version ||
           (remote.version == local.version &&
               remote.updatedAt.compareTo(local.updatedAt) > 0);
 
       if (remoteWins) {
-        await _local.upsert(_dtoToDbModel(remote, isSynced: 1));
+        await _local.upsertFromRemote(_dtoToDbModel(remote, isSynced: 1));
         await _writeSyncLog(
           entityId: remote.id,
           entityType: 'instrument',
@@ -250,4 +254,3 @@ class SyncService {
     );
   }
 }
-
