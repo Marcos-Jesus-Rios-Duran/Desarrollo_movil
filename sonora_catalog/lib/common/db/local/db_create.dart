@@ -16,7 +16,8 @@ class DbCreate {
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
   /// Sentencias SQL separadas por punto y coma para ejecutar en `onCreate`.
-  static const String createTablesScript = '''
+  static const String createTablesScript =
+      '''
     CREATE TABLE $tableCategories (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
@@ -38,7 +39,6 @@ class DbCreate {
       updated_at TEXT NOT NULL,
       is_synced INTEGER NOT NULL DEFAULT 0,
       is_deleted INTEGER NOT NULL DEFAULT 0,
-      FOREIGN KEY (category_id) REFERENCES $tableCategories (id)
     );
 
     CREATE TABLE $tableSyncLogs (

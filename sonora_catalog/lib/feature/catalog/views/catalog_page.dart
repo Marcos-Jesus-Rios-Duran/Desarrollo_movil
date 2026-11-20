@@ -65,7 +65,7 @@ class _CatalogPageState extends State<CatalogPage> {
         // Botón de sincronización manual
         ValueListenableBuilder<bool>(
           valueListenable: widget.controller.isLoading,
-          builder: (_, bool loading, __) {
+          builder: (_, bool loading, _) {
             return IconButton(
               icon: loading
                   ? const SizedBox(
@@ -120,7 +120,7 @@ class _ConnectivityBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
       valueListenable: isOnline,
-      builder: (_, bool online, __) {
+      builder: (_, bool online, _) {
         if (online) return const SizedBox.shrink();
         return Container(
           color: Colors.orange.shade700,
@@ -150,7 +150,7 @@ class _ErrorBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<String>(
       valueListenable: errorMessage,
-      builder: (_, String msg, __) {
+      builder: (_, String msg, _) {
         if (msg.isEmpty) return const SizedBox.shrink();
         return Container(
           color: Colors.red.shade700,
@@ -182,13 +182,13 @@ class _CatalogBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<bool>(
       valueListenable: controller.isLoading,
-      builder: (_, bool loading, __) {
+      builder: (_, bool loading, _) {
         if (loading) {
           return const Center(child: CircularProgressIndicator());
         }
         return ValueListenableBuilder<List<InstrumentViewModel>>(
           valueListenable: controller.instruments,
-          builder: (_, List<InstrumentViewModel> list, __) {
+          builder: (_, List<InstrumentViewModel> list, _) {
             if (list.isEmpty) {
               return const Center(
                 child: Text(
@@ -201,7 +201,7 @@ class _CatalogBody extends StatelessWidget {
               onRefresh: controller.syncNow,
               child: ListView.separated(
                 itemCount: list.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (BuildContext ctx, int index) {
                   return _InstrumentTile(
                     vm: list[index],
@@ -256,10 +256,8 @@ class _InstrumentTile extends StatelessWidget {
     await Navigator.push<void>(
       context,
       MaterialPageRoute<void>(
-        builder: (_) => InstrumentFormPage(
-          controller: controller,
-          existing: vm,
-        ),
+        builder: (_) =>
+            InstrumentFormPage(controller: controller, existing: vm),
       ),
     );
   }
@@ -277,8 +275,7 @@ class _InstrumentTile extends StatelessWidget {
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child:
-                const Text('Eliminar', style: TextStyle(color: Colors.red)),
+            child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
           ),
         ],
       ),
@@ -288,4 +285,3 @@ class _InstrumentTile extends StatelessWidget {
     }
   }
 }
-

@@ -26,8 +26,9 @@ class CatalogController {
   // ---------------------------------------------------------------------------
 
   /// Lista reactiva de instrumentos presentados en pantalla.
-  final ValueNotifier<List<InstrumentViewModel>> instruments =
-      ValueNotifier(<InstrumentViewModel>[]);
+  final ValueNotifier<List<InstrumentViewModel>> instruments = ValueNotifier(
+    <InstrumentViewModel>[],
+  );
 
   /// Indicador de carga / sincronización en progreso.
   final ValueNotifier<bool> isLoading = ValueNotifier(false);
@@ -52,9 +53,9 @@ class CatalogController {
     CatalogBridge? bridge,
     SyncService? syncService,
     Connectivity? connectivity,
-  })  : _bridge = bridge ?? CatalogBridge(),
-        _syncService = syncService ?? SyncService(),
-        _connectivity = connectivity ?? Connectivity();
+  }) : _bridge = bridge ?? CatalogBridge(),
+       _syncService = syncService ?? SyncService(),
+       _connectivity = connectivity ?? Connectivity();
 
   // ---------------------------------------------------------------------------
   // Inicialización
@@ -159,16 +160,15 @@ class CatalogController {
 
   /// Escucha cambios de conectividad y dispara sync automático al recuperarla.
   void _startConnectivityMonitor() {
-    _connectivitySub =
-        _connectivity.onConnectivityChanged.listen(_onConnectivityChanged);
+    _connectivitySub = _connectivity.onConnectivityChanged.listen(
+      _onConnectivityChanged,
+    );
     // Verificación inicial
     _connectivity.checkConnectivity().then(_onConnectivityChanged);
   }
 
   Future<void> _onConnectivityChanged(List<ConnectivityResult> results) async {
-    final bool online = results.any(
-      (r) => r != ConnectivityResult.none,
-    );
+    final bool online = results.any((r) => r != ConnectivityResult.none);
     final bool wasOffline = !isOnline.value;
     isOnline.value = online;
 
@@ -191,9 +191,7 @@ class CatalogController {
       AppConfig.syncTaskUniqueName,
       AppConfig.syncTaskName,
       frequency: const Duration(minutes: 15),
-      constraints: Constraints(
-        networkType: NetworkType.connected,
-      ),
+      constraints: Constraints(networkType: NetworkType.connected),
       existingWorkPolicy: ExistingWorkPolicy.keep,
     );
   }
@@ -216,10 +214,7 @@ class CatalogController {
   // ---------------------------------------------------------------------------
 
   /// Comparación elemento-a-elemento usando el `==` de [InstrumentViewModel].
-  bool _listEquals(
-    List<InstrumentViewModel> a,
-    List<InstrumentViewModel> b,
-  ) {
+  bool _listEquals(List<InstrumentViewModel> a, List<InstrumentViewModel> b) {
     if (a.length != b.length) return false;
     for (int i = 0; i < a.length; i++) {
       if (a[i] != b[i]) return false;
@@ -227,4 +222,3 @@ class CatalogController {
     return true;
   }
 }
-

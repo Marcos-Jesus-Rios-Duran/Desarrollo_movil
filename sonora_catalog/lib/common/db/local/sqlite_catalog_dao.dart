@@ -168,4 +168,22 @@ class SqliteCatalogDao implements DataLogInterface {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  /// Marca como sincronizado solo si el registro no cambió desde el push.
+  /// Devuelve false si fue editado mientras el batch estaba en vuelo.
+
+  Future<bool> markAsSyncedIfUnchanged(
+    String id, {
+    required int version,
+    required String updatedAt,
+  }) async {
+    final Database db = await _dbHelper.database;
+    final int count = await db.update(
+      DbCreate.tableInstruments,
+      <String, dynamic>{'is_synced': 1},
+      where: 'id = ? AND version = ? AND updated_at = ?',
+      whereArgs: <Object>[id, version, updatedAt],
+    );
+    return count > 0;
+  }
 }

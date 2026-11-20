@@ -14,7 +14,10 @@ import 'package:workmanager/workmanager.dart';
 /// Punto de entrada del isolate de background para WorkManager.
 @pragma('vm:entry-point')
 void callbackDispatcher() {
-  Workmanager().executeTask((String taskName, Map<String, dynamic>? inputData) async {
+  Workmanager().executeTask((
+    String taskName,
+    Map<String, dynamic>? inputData,
+  ) async {
     // Inicializar Firebase dentro del isolate de background
     await AppConfig.initializeFirebase();
 

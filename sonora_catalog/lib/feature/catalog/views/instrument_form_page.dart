@@ -179,7 +179,7 @@ class _InstrumentFormPageState extends State<InstrumentFormPage> {
       brand: _brandCtrl.text.trim(),
       price: double.parse(_priceCtrl.text.trim()),
       stock: int.parse(_stockCtrl.text.trim()),
-      version: (widget.existing?.version ?? 0) + 1,
+      version: widget.existing?.version ?? 0,
       updatedAt: DateTime.now().toUtc(),
       isSynced: false,
       isDeleted: false,
@@ -217,4 +217,3 @@ class _InstrumentFormPageState extends State<InstrumentFormPage> {
     );
   }
 }
-

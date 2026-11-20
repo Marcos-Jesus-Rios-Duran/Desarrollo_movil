@@ -5,6 +5,7 @@ import 'package:sonora_catalog/common/db/local/sqlite_catalog_dao.dart';
 import 'package:sonora_catalog/common/db/models/instrument_db_model.dart';
 import 'package:sonora_catalog/feature/catalog/data/models/instrument_dto.dart';
 import 'package:sonora_catalog/feature/sync/models/sync_log_model.dart';
+import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
@@ -53,7 +54,8 @@ class SyncService {
       await _pushPending();
       await _pullAndMerge();
       return true;
-    } catch (e) {
+    } catch (e, st) {
+      debugPrint('runSync error: $e\n$st');
       await _writeSyncLog(
         entityId: 'global',
         entityType: 'sync',
@@ -99,12 +101,16 @@ class SyncService {
 
     // ACK: marcar como sincronizados en SQLite
     for (final InstrumentDbModel item in pending) {
-      await _local.markAsSynced(item.id, remoteVersion: item.version);
+      final bool acked = await _local.markAsSyncedIfUnchanged(
+        item.id,
+        version: item.version,
+        updatedAt: item.updatedAt,
+      );
       await _writeSyncLog(
         entityId: item.id,
         entityType: 'instrument',
         action: 'push',
-        status: 'ok',
+        status: acked ? 'ok' : 'stale_ack_skipped',
       );
     }
   }
@@ -127,11 +133,17 @@ class SyncService {
       since,
     );
 
+    String? maxUpdatedAt;
+
     for (final InstrumentDto remote in remoteChanges) {
+      if (maxUpdatedAt == null ||
+          remote.updatedAt.compareTo(maxUpdatedAt) > 0) {
+        maxUpdatedAt = remote.updatedAt;
+      }
+
       final InstrumentDbModel? local = await _local.getDbModelById(remote.id);
 
       if (local == null) {
-        // Caso: nuevo registro remoto — insertar en local
         await _local.upsertFromRemote(_dtoToDbModel(remote, isSynced: 1));
         await _writeSyncLog(
           entityId: remote.id,
@@ -139,6 +151,12 @@ class SyncService {
           action: 'pull_insert',
           status: 'ok',
         );
+        continue;
+      }
+
+      // Eco de nuestro propio push: idéntico, no hay nada que hacer ni loguear.
+      if (remote.version == local.version &&
+          remote.updatedAt == local.updatedAt) {
         continue;
       }
 
@@ -156,7 +174,7 @@ class SyncService {
           status: 'ok',
         );
       } else {
-        // Local gana — no hay nada que hacer, pero lo registramos
+        // Local gana: se enviará en el próximo push si está pendiente.
         await _writeSyncLog(
           entityId: remote.id,
           entityType: 'instrument',
@@ -166,8 +184,10 @@ class SyncService {
       }
     }
 
-    // Actualizar el cursor de Pull con la hora UTC actual
-    await _setLastPullAt(DateTime.now().toUtc().toIso8601String());
+    // Avanzar el cursor solo si llegaron cambios, con el reloj del servidor de datos.
+    if (maxUpdatedAt != null) {
+      await _setLastPullAt(maxUpdatedAt);
+    }
   }
 
   // ---------------------------------------------------------------------------

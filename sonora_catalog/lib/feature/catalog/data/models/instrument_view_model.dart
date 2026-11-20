@@ -162,17 +162,17 @@ class InstrumentViewModel {
   /// en colecciones (`Set`, `Map`, `ListView` con claves).
   @override
   int get hashCode => Object.hash(
-        id,
-        categoryId,
-        name,
-        brand,
-        price,
-        stock,
-        version,
-        updatedAt,
-        isSynced,
-        isDeleted,
-      );
+    id,
+    categoryId,
+    name,
+    brand,
+    price,
+    stock,
+    version,
+    updatedAt,
+    isSynced,
+    isDeleted,
+  );
 
   // ---------------------------------------------------------------------------
   // Helpers de presentación
@@ -193,4 +193,3 @@ class InstrumentViewModel {
       'price: $price, stock: $stock, version: $version, '
       'isSynced: $isSynced, isDeleted: $isDeleted)';
 }
-

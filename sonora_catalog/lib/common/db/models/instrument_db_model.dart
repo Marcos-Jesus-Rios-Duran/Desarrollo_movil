@@ -68,7 +68,10 @@ class InstrumentDbModel {
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
 
   /// Crea una instancia de [InstrumentDbModel] desde un documento de Firestore.
-  factory InstrumentDbModel.fromFirestore(Map<String, dynamic> data, String docId) {
+  factory InstrumentDbModel.fromFirestore(
+    Map<String, dynamic> data,
+    String docId,
+  ) {
     return InstrumentDbModel(
       id: docId,
       categoryId: (data['category_id'] as String?) ?? '',
@@ -77,7 +80,8 @@ class InstrumentDbModel {
       price: ((data['price'] as num?) ?? 0.0).toDouble(),
       stock: (data['stock'] as int?) ?? 0,
       version: (data['version'] as int?) ?? 1,
-      updatedAt: (data['updated_at'] as String?) ??
+      updatedAt:
+          (data['updated_at'] as String?) ??
           DateTime.now().toUtc().toIso8601String(),
       isSynced: 1,
       isDeleted: (data['is_deleted'] as int?) ?? 0,

@@ -23,7 +23,7 @@ class CloudCatalogDao implements DataLogInterface {
   late final CollectionReference<Map<String, dynamic>> _col;
 
   CloudCatalogDao({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance {
+    : _firestore = firestore ?? FirebaseFirestore.instance {
     _col = _firestore.collection(AppConfig.instrumentsCollection);
   }
 
@@ -107,19 +107,16 @@ class CloudCatalogDao implements DataLogInterface {
     const int batchLimit = 500;
 
     for (int i = 0; i < instruments.length; i += batchLimit) {
-      final List<InstrumentDto> chunk =
-          instruments.sublist(i, (i + batchLimit).clamp(0, instruments.length));
+      final List<InstrumentDto> chunk = instruments.sublist(
+        i,
+        (i + batchLimit).clamp(0, instruments.length),
+      );
 
       final WriteBatch batch = _firestore.batch();
       for (final InstrumentDto dto in chunk) {
-        batch.set(
-          _col.doc(dto.id),
-          dto.toFirestore(),
-          SetOptions(merge: true),
-        );
+        batch.set(_col.doc(dto.id), dto.toFirestore(), SetOptions(merge: true));
       }
       await batch.commit();
     }
   }
 }
-
