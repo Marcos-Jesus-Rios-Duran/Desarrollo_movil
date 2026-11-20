@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:sonora_catalog/common/config/app_config.dart';
 import 'package:sonora_catalog/feature/catalog/contracts/icatalog.dart';
 import 'package:sonora_catalog/feature/catalog/data/models/instrument_dto.dart';
@@ -16,17 +17,26 @@ class CloudCatalogDao implements DataLogInterface {
   // ---------------------------------------------------------------------------
   // Dependencias inyectadas
   // ---------------------------------------------------------------------------
-
-  final FirebaseFirestore _firestore;
-
+  /// Referencia a la base de datos Firestore.
   /// Referencia a la colección remota de instrumentos.
-  late final CollectionReference<Map<String, dynamic>> _col;
+  final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
 
-  CloudCatalogDao({FirebaseFirestore? firestore})
-    : _firestore = firestore ?? FirebaseFirestore.instance {
-    _col = _firestore.collection(AppConfig.instrumentsCollection);
+  CloudCatalogDao({FirebaseFirestore? firestore, FirebaseAuth? auth})
+    : _firestore = firestore ?? FirebaseFirestore.instance,
+      _auth = auth ?? FirebaseAuth.instance;
+
+  /// Colección del usuario autenticado: users/{uid}/instruments.
+  CollectionReference<Map<String, dynamic>> get _col {
+    final String? uid = _auth.currentUser?.uid;
+    if (uid == null) {
+      throw StateError('Sin sesión: no se puede acceder a Firestore.');
+    }
+    return _firestore
+        .collection(AppConfig.usersCollection)
+        .doc(uid)
+        .collection(AppConfig.instrumentsCollection);
   }
-
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
   // Implementación de DataLogInterface
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv

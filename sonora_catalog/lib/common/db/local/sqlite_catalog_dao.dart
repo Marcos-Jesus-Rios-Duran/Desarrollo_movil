@@ -3,7 +3,7 @@ import 'package:sonora_catalog/common/db/local/db_helper.dart';
 import 'package:sonora_catalog/common/db/models/instrument_db_model.dart';
 import 'package:sonora_catalog/feature/catalog/contracts/icatalog.dart';
 import 'package:sonora_catalog/feature/catalog/data/models/instrument_dto.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 /// DAO local que implementa [DataLogInterface] usando SQLite.
 ///

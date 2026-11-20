@@ -11,6 +11,7 @@ class AppConfig {
   static const String categoriesCollection = 'categories';
   static const String syncTaskUniqueName = 'sonora_bidirectional_sync';
   static const String syncTaskName = 'bidirectionalSync';
+  static const String usersCollection = 'users';
 
   // vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
   // Inicialización de Firebase

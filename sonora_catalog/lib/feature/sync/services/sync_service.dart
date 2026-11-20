@@ -6,7 +6,7 @@ import 'package:sonora_catalog/common/db/models/instrument_db_model.dart';
 import 'package:sonora_catalog/feature/catalog/data/models/instrument_dto.dart';
 import 'package:sonora_catalog/feature/sync/models/sync_log_model.dart';
 import 'package:flutter/foundation.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:uuid/uuid.dart';
 
 /// Servicio de sincronización bidireccional **Push & Pull**.
